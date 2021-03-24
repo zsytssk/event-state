@@ -17,3 +17,5 @@ triggerFn | eventList triggerFn 每次 return true 都修改
   - state.inner1 ｜ state.inner2 ｜ state.inner2 ...
 
 - eventList triggerFn 怎么样
+
+- @todo appState.useState 监听修改

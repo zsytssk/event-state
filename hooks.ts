@@ -2,20 +2,33 @@ import { useEffect, useRef, useState } from 'react';
 
 import { EventState } from './index';
 
+export type BindFn = (triggerFn?: () => void) => (() => void) | undefined;
 export function genUseEventState<T extends EventState>(state: T, oriEventList: string[]) {
-  return (eventList?: string[]) => {
+  return (eventList?: string[], bindFn?: BindFn) => {
     const localEventList = eventList || oriEventList;
     const ref = useRef<() => void>();
+    const bindOff = useRef<() => void>();
     const [changeIndex, setChangeIndex] = useState(0);
+    const changeIndexRef = useRef(changeIndex);
 
     useEffect(() => {
       ref.current = () => {
-        setChangeIndex(changeIndex + 1);
+        changeIndexRef.current += 1;
+        setChangeIndex(changeIndexRef.current);
+
+        bindOff.current?.();
+        bindOff.current = bindFn?.(() => {
+          changeIndexRef.current += 1;
+          setChangeIndex(changeIndexRef.current);
+        });
       };
+
       return () => {
         ref.current = undefined;
+        bindOff.current?.();
+        bindOff.current = undefined;
       };
-    }, [changeIndex]);
+    }, []);
 
     useEffect(() => {
       const fn = () => {
@@ -35,16 +48,16 @@ export function genUseEventState<T extends EventState>(state: T, oriEventList: s
     return [state, changeIndex] as [T, number];
   };
 }
-export type BindFn = (triggerFn: () => void) => () => void;
+
 export function genUseEventSelector<T extends EventState>(state: T, oriEventList: string[]) {
   return <U extends (state: T) => any>(fn: U, eventList?: string[], bindFn?: BindFn) => {
-    const ref = useRef<(state: T) => void>();
+    const ref = useRef<() => void>();
     const bindOff = useRef<() => void>();
     const [localState, setLocalState] = useState<ReturnType<U>>(fn(state));
     const localEventList = eventList || oriEventList;
 
     useEffect(() => {
-      ref.current = (state: T) => {
+      ref.current = () => {
         setLocalState(fn(state));
 
         bindOff.current?.();
@@ -54,12 +67,14 @@ export function genUseEventSelector<T extends EventState>(state: T, oriEventList
       };
       return () => {
         ref.current = undefined;
+        bindOff.current?.();
+        bindOff.current = undefined;
       };
     }, [fn]);
 
     useEffect(() => {
       const fn = () => {
-        ref.current?.(state);
+        ref.current?.();
       };
       for (const event of localEventList) {
         state.on(event, fn);
