@@ -1,0 +1,9 @@
+.idea/
+node_modules/
+.swagger-codegen
+.swagger-codegen-ignore
+package-lock.json
+webpack.vendor.js
+.DS_Store
+lerna-debug.log
+.env
