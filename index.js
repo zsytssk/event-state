@@ -8,4 +8,15 @@ export class EventState extends Event {
         this.useState = genUseEventState(this, eventList);
         this.useSelector = genUseEventSelector(this, eventList);
     }
+    bind(fn, eventList) {
+        const localEvent = eventList || this.eventList;
+        for (const event of localEvent) {
+            this.on(event, fn);
+        }
+        return () => {
+            for (const event of localEvent) {
+                this.off(event, fn);
+            }
+        };
+    }
 }

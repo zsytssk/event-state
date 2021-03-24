@@ -5,4 +5,5 @@ export declare abstract class EventState extends Event {
     useState: (eventList?: string[]) => [this, number];
     useSelector: <U extends (state: this) => any>(fn: U, eventList?: string[], bindFn?: BindFn) => ReturnType<U>;
     constructor(eventList: string[]);
+    bind(fn: () => void, eventList?: string[]): () => void;
 }
