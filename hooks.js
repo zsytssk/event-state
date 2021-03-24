@@ -31,13 +31,19 @@ export function genUseEventState(state, oriEventList) {
     };
 }
 export function genUseEventSelector(state, oriEventList) {
-    return (fn, eventList) => {
+    return (fn, eventList, bindFn) => {
         const ref = useRef();
+        const bindOff = useRef();
         const [localState, setLocalState] = useState(fn(state));
         const localEventList = eventList || oriEventList;
         useEffect(() => {
             ref.current = (state) => {
+                var _a;
                 setLocalState(fn(state));
+                (_a = bindOff.current) === null || _a === void 0 ? void 0 : _a.call(bindOff);
+                bindOff.current = bindFn === null || bindFn === void 0 ? void 0 : bindFn(() => {
+                    setLocalState(fn(state));
+                });
             };
             return () => {
                 ref.current = undefined;

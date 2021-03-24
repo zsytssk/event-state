@@ -35,16 +35,22 @@ export function genUseEventState<T extends EventState>(state: T, oriEventList: s
     return [state, changeIndex] as [T, number];
   };
 }
-
+export type BindFn = (triggerFn: () => void) => () => void;
 export function genUseEventSelector<T extends EventState>(state: T, oriEventList: string[]) {
-  return <U extends (state: T) => any>(fn: U, eventList?: string[]) => {
+  return <U extends (state: T) => any>(fn: U, eventList?: string[], bindFn?: BindFn) => {
     const ref = useRef<(state: T) => void>();
+    const bindOff = useRef<() => void>();
     const [localState, setLocalState] = useState<ReturnType<U>>(fn(state));
     const localEventList = eventList || oriEventList;
 
     useEffect(() => {
       ref.current = (state: T) => {
         setLocalState(fn(state));
+
+        bindOff.current?.();
+        bindOff.current = bindFn?.(() => {
+          setLocalState(fn(state));
+        });
       };
       return () => {
         ref.current = undefined;
