@@ -1,10 +1,12 @@
 {
-  "name": "event-state",
-  "version": "0.1.0",
+  "name": "react-event-state",
+  "version": "0.1.1",
   "description": "",
-  "module": "build/index.js",
+  "module": "index.js",
+  "main": "index.js",
   "files": [
-    "dist/*"
+    "*.js",
+    "*.d.ts"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,7 +16,7 @@
     "url": "git+https://github.com/zsytssk/event-state.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "zsytssk",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/zsytssk/event-state/issues"
