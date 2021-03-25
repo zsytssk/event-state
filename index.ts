@@ -3,7 +3,7 @@ import { genUseEventState, genUseEventSelector, BindFn } from './hooks';
 
 export abstract class EventState extends Event {
   protected eventList: string[] = [];
-  public useState: (eventList?: string[]) => [this, number];
+  public useState: (eventList?: string[], bindFn?: BindFn) => [this, number];
   public useSelector: <U extends (state: this) => any>(fn: U, eventList?: string[], bindFn?: BindFn) => ReturnType<U>;
   constructor(eventList: string[]) {
     super();
