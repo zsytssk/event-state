@@ -1,8 +1,7 @@
 ## Intro
 
 用事件实现的 react 数据管理器；它的原理是每次改变数据时触发事件，在一个地方监听事件去重新获取 state 和生成新的 stateId；
-可以创建任意多个的类，任意嵌套，以你舒服的方式组织数据类；
-简单是它最大的特点；
+可以创建任意多个的类，任意嵌套，以你舒服的方式组织数据类, 简单是它最大的特点；
 
 use event for react state manager, It use hook listen event change and change stateId;
 you can use any class as you want, use the way you like to organize state code.
