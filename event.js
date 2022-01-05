@@ -2,7 +2,8 @@
  * 事件订阅发布构造函数
  */
 export class Event {
-    constructor() {
+    constructor(parent) {
+        this.parent = parent;
         this.events = new Map();
     }
     /**
@@ -69,13 +70,15 @@ export class Event {
      * @param data
      */
     emit(event, ...params) {
+        var _a;
+        (_a = this.parent) === null || _a === void 0 ? void 0 : _a.emit(event, ...params);
         if (!this.events.has(event)) {
             return;
         }
         const events = this.events.get(event);
         for (const item of [...events]) {
             const { callback, once, off } = item;
-            if (typeof callback === "function") {
+            if (typeof callback === 'function') {
                 callback(...params);
             }
             if (once) {

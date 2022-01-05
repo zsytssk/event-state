@@ -10,7 +10,9 @@ export declare type EventData = Set<{
  * 事件订阅发布构造函数
  */
 export declare class Event {
+    protected parent?: Event | undefined;
     protected events: Map<string, EventData>;
+    constructor(parent?: Event | undefined);
     /**
      * 注册监听
      * @param event

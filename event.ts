@@ -13,7 +13,7 @@ export type EventData = Set<{
  */
 export class Event {
   protected events: Map<string, EventData> = new Map();
-
+  constructor(protected parent?: Event) {}
   /**
    * 注册监听
    * @param event
@@ -80,13 +80,14 @@ export class Event {
    * @param data
    */
   public emit(event: string, ...params: any[]) {
+    this.parent?.emit(event, ...params);
     if (!this.events.has(event)) {
       return;
     }
     const events = this.events.get(event) as EventData;
     for (const item of [...events]) {
       const { callback, once, off } = item;
-      if (typeof callback === "function") {
+      if (typeof callback === 'function') {
         callback(...params);
       }
       if (once) {

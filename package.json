@@ -1,6 +1,6 @@
 {
   "name": "react-event-state",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "description": "",
   "module": "index.js",
   "main": "index.js",
@@ -9,7 +9,7 @@
     "*.d.ts"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",

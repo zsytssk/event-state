@@ -2,12 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 
 import { EventState } from './index';
 
-export type BindFn = (triggerFn?: () => void) => (() => void) | undefined;
 export function genUseEventState<T extends EventState>(state: T, oriEventList: string[]) {
-  return (eventList?: string[], bindFn?: BindFn) => {
+  return (eventList?: string[]) => {
     const localEventList = eventList || oriEventList;
     const ref = useRef<() => void>();
-    const bindOff = useRef<() => void>();
     const [changeIndex, setChangeIndex] = useState(0);
     const changeIndexRef = useRef(changeIndex);
 
@@ -15,18 +13,10 @@ export function genUseEventState<T extends EventState>(state: T, oriEventList: s
       ref.current = () => {
         changeIndexRef.current += 1;
         setChangeIndex(changeIndexRef.current);
-
-        bindOff.current?.();
-        bindOff.current = bindFn?.(() => {
-          changeIndexRef.current += 1;
-          setChangeIndex(changeIndexRef.current);
-        });
       };
 
       return () => {
         ref.current = undefined;
-        bindOff.current?.();
-        bindOff.current = undefined;
       };
     }, []);
 
@@ -50,25 +40,17 @@ export function genUseEventState<T extends EventState>(state: T, oriEventList: s
 }
 
 export function genUseEventSelector<T extends EventState>(state: T, oriEventList: string[]) {
-  return <U extends (state: T) => any>(fn: U, eventList?: string[], bindFn?: BindFn) => {
+  return <U extends (state: T) => any>(fn: U, eventList?: string[]) => {
     const ref = useRef<() => void>();
-    const bindOff = useRef<() => void>();
     const [localState, setLocalState] = useState<ReturnType<U>>(fn(state));
     const localEventList = eventList || oriEventList;
 
     useEffect(() => {
       ref.current = () => {
         setLocalState(fn(state));
-
-        bindOff.current?.();
-        bindOff.current = bindFn?.(() => {
-          setLocalState(fn(state));
-        });
       };
       return () => {
         ref.current = undefined;
-        bindOff.current?.();
-        bindOff.current = undefined;
       };
     }, [fn]);
 
