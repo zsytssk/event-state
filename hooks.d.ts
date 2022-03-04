@@ -1,3 +1,13 @@
 import { EventState } from './index';
-export declare function genUseEventState<T extends EventState>(state: T, oriEventList: string[]): (eventList?: string[] | undefined) => [T, number];
-export declare function genUseEventSelector<T extends EventState>(state: T, oriEventList: string[]): <U extends (state: T) => any>(fn: U, eventList?: string[] | undefined) => ReturnType<U>;
+export declare function useEventState<T extends EventState>(state: T, eventList?: string[]): [T, number];
+export declare function useEventSelector<T extends EventState, U extends (state: T) => any>(
+  state: T,
+  fn: U,
+  eventList: string[],
+): [ReturnType<U>];
+export declare function useThrottleEventState<T extends EventState>(state: T, eventList?: string[]): [T, number];
+export declare function useThrottleEventSelector<T extends EventState, U extends (state: T) => any>(
+  state: T,
+  fn: U,
+  eventList: string[],
+): [ReturnType<U>];
