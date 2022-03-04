@@ -5,6 +5,7 @@ export class Event {
     constructor(parent) {
         this.parent = parent;
         this.events = new Map();
+        this.destroyed = false;
     }
     /**
      * 注册监听
@@ -87,6 +88,8 @@ export class Event {
         }
     }
     destroy() {
+        this.destroyed = true;
+        this.parent = undefined;
         this.events.clear();
     }
 }

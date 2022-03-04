@@ -12,6 +12,7 @@ export declare type EventData = Set<{
 export declare class Event {
     protected parent?: Event | undefined;
     protected events: Map<string, EventData>;
+    destroyed: boolean;
     constructor(parent?: Event | undefined);
     /**
      * 注册监听

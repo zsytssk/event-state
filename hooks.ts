@@ -1,74 +1,170 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { EventState } from './index';
+import { throttleFn } from './utils';
 
-export function genUseEventState<T extends EventState>(state: T, oriEventList: string[]) {
-  return (eventList?: string[]) => {
-    const localEventList = eventList || oriEventList;
-    const ref = useRef<() => void>();
-    const [changeIndex, setChangeIndex] = useState(0);
-    const changeIndexRef = useRef(changeIndex);
+export function useEventState<T extends EventState>(state: T, eventList?: string[]) {
+  const localEventList = eventList || state.eventList;
+  const ref = useRef<() => void>();
+  const [changeIndex, setChangeIndex] = useState(0);
 
-    useEffect(() => {
-      ref.current = () => {
-        changeIndexRef.current += 1;
-        setChangeIndex(changeIndexRef.current);
-      };
-
-      return () => {
-        ref.current = undefined;
-      };
-    }, []);
-
-    useEffect(() => {
-      const fn = () => {
-        ref.current?.();
-      };
-      for (const event of localEventList) {
-        state.on(event, fn);
-      }
-      return () => {
-        for (const event of localEventList) {
-          state.off(event, fn);
+  useEffect(() => {
+    const refFn = () => {
+      setChangeIndex((i) => {
+        if (i === 100) {
+          return 0;
         }
-      };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [state, localEventList]);
+        return i + 1;
+      });
+    };
 
-    return [state, changeIndex] as [T, number];
-  };
+    ref.current = refFn;
+    return () => {
+      ref.current = undefined;
+    };
+  }, []);
+
+  useEffect(() => {
+    const fn = () => {
+      ref.current?.();
+    };
+    for (const event of localEventList) {
+      state.on(event, fn);
+    }
+    return () => {
+      for (const event of localEventList) {
+        state.off(event, fn);
+      }
+    };
+  }, [state, localEventList]);
+
+  return [state, changeIndex] as [T, number];
+}
+export function useThrottleEventState<T extends EventState>(state: T, time = 300, eventList?: string[]) {
+  const localEventList = eventList || state.eventList;
+  const ref = useRef<() => void>();
+  const [changeIndex, setChangeIndex] = useState(0);
+
+  useEffect(() => {
+    const refFn = () => {
+      setChangeIndex((i) => {
+        if (i === 100) {
+          return 0;
+        }
+        return i + 1;
+      });
+    };
+
+    ref.current = throttleFn(refFn, time);
+    return () => {
+      ref.current = undefined;
+    };
+  }, []);
+
+  useEffect(() => {
+    const fn = () => {
+      ref.current?.();
+    };
+    for (const event of localEventList) {
+      state.on(event, fn);
+    }
+    return () => {
+      for (const event of localEventList) {
+        state.off(event, fn);
+      }
+    };
+  }, [state, localEventList]);
+
+  return [state, changeIndex] as [T, number];
 }
 
-export function genUseEventSelector<T extends EventState>(state: T, oriEventList: string[]) {
-  return <U extends (state: T) => any>(fn: U, eventList?: string[]) => {
-    const ref = useRef<() => void>();
-    const [localState, setLocalState] = useState<ReturnType<U>>(fn(state));
-    const localEventList = eventList || oriEventList;
+export function useEventSelector<T extends EventState, U extends (state: T) => any>(
+  state: T,
+  fn: U,
+  eventList?: string[],
+) {
+  const localEventList = eventList || state.eventList;
+  const ref = useRef<() => void>();
+  const subStateRef = useRef<ReturnType<U>>(fn(state));
+  const [changeIndex, setChangeIndex] = useState(0);
 
-    useEffect(() => {
-      ref.current = () => {
-        setLocalState(fn(state));
-      };
-      return () => {
-        ref.current = undefined;
-      };
-    }, [fn]);
-
-    useEffect(() => {
-      const fn = () => {
-        ref.current?.();
-      };
-      for (const event of localEventList) {
-        state.on(event, fn);
-      }
-      return () => {
-        for (const event of localEventList) {
-          state.off(event, fn);
+  useEffect(() => {
+    const refFn = () => {
+      const subState = fn(state);
+      subStateRef.current = subState;
+      setChangeIndex((i) => {
+        if (i === 100) {
+          return 0;
         }
-      };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [state, localEventList]);
+        return i + 1;
+      });
+    };
 
-    return localState;
-  };
+    ref.current = refFn;
+    return () => {
+      ref.current = undefined;
+    };
+  }, [fn]);
+
+  useEffect(() => {
+    const fn = () => {
+      ref.current?.();
+    };
+    for (const event of localEventList) {
+      state.on(event, fn);
+    }
+    return () => {
+      for (const event of localEventList) {
+        state.off(event, fn);
+      }
+    };
+  }, [state, localEventList]);
+
+  return [subStateRef.current, changeIndex];
+}
+
+export function useThrottleEventSelector<T extends EventState, U extends (state: T) => any>(
+  state: T,
+  fn: U,
+  time = 300,
+  eventList?: string[],
+) {
+  const localEventList = eventList || state.eventList;
+  const ref = useRef<() => void>();
+  const subStateRef = useRef<ReturnType<U>>(fn(state));
+  const [changeIndex, setChangeIndex] = useState(0);
+
+  useEffect(() => {
+    const refFn = () => {
+      const subState = fn(state);
+      subStateRef.current = subState;
+      setChangeIndex((i) => {
+        if (i === 100) {
+          return 0;
+        }
+        return i + 1;
+      });
+    };
+
+    ref.current = throttleFn(refFn, time);
+    return () => {
+      ref.current = undefined;
+    };
+  }, [fn]);
+
+  useEffect(() => {
+    const fn = () => {
+      ref.current?.();
+    };
+    for (const event of localEventList) {
+      state.on(event, fn);
+    }
+    return () => {
+      for (const event of localEventList) {
+        state.off(event, fn);
+      }
+    };
+  }, [state, localEventList]);
+
+  return [subStateRef.current, changeIndex];
 }
