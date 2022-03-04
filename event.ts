@@ -13,6 +13,7 @@ export type EventData = Set<{
  */
 export class Event {
   protected events: Map<string, EventData> = new Map();
+  public destroyed: boolean = false;
   constructor(protected parent?: Event) {}
   /**
    * 注册监听
@@ -96,6 +97,8 @@ export class Event {
     }
   }
   public destroy() {
+    this.destroyed = true;
+    this.parent = undefined;
     this.events.clear();
   }
 }

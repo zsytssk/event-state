@@ -1,6 +1,6 @@
 {
   "name": "react-event-state",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "",
   "module": "index.js",
   "main": "index.js",
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/zsytssk/event-state#readme",
   "peerDependencies": {
-    "@types/react": "^17.0.3",
+    "@types/react": "^17.0.39",
     "react": "^17.0.2"
   }
 }
