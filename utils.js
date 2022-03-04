@@ -1,17 +1,9 @@
-"use strict";
-exports.__esModule = true;
-exports.throttleFn = void 0;
-var throttleFn = function (fn, time) {
-    var timeout = null;
-    return function () {
-        var params = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            params[_i] = arguments[_i];
-        }
+export const throttleFn = (fn, time) => {
+    let timeout = 0;
+    return (...params) => {
         clearTimeout(timeout);
-        timeout = setTimeout(function () {
-            fn.apply(void 0, params);
+        timeout = setTimeout(() => {
+            fn(...params);
         }, time);
     };
 };
-exports.throttleFn = throttleFn;
