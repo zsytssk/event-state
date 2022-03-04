@@ -120,7 +120,7 @@ export function useEventSelector<T extends EventState, U extends (state: T) => a
     };
   }, [state, localEventList]);
 
-  return [subStateRef.current, changeIndex];
+  return [subStateRef.current, changeIndex] as [ReturnType<U>, number];
 }
 
 export function useThrottleEventSelector<T extends EventState, U extends (state: T) => any>(
@@ -166,5 +166,5 @@ export function useThrottleEventSelector<T extends EventState, U extends (state:
     };
   }, [state, localEventList]);
 
-  return [subStateRef.current, changeIndex];
+  return [subStateRef.current, changeIndex] as [ReturnType<U>, number];
 }
