@@ -9,12 +9,12 @@ simple and easy to use.
 
 ## api
 
-it provider to api just like redux, `useState` and `useSelector`;
+it provider to api just like redux, `useEventState` and `useEventSelector`;
 
 ```ts
 ...
-const [state, stateId] = state.useState();
-const {...} = state.useSelector(...);
+const [state, stateId] = useEventState(state);
+const [{...}, stateId] = useEventSelector(state);
 ```
 
 ## how to use
@@ -52,10 +52,11 @@ export const appState = new State();
 
 //app.tsx
 import { appState } from './state';
+import { useEventState, useEventSelector } from 'react-event-state/hooks';
 
 export function App() {
-  const [state] = appState.useState();
-  const { sum } = appState.useSelector((state) => {
+  const [state] = useEventState(appState);
+  const [{ sum }] = useEventSelector((state) => {
     return { sum: state.index1 + state.index2 };
   });
   return (
